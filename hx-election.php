@@ -12,7 +12,9 @@ include_once(plugin_dir_path(__FILE__).'hx-shortcode.php');
 
 function custom_js() {
     wp_register_script('hx_electionjs', plugin_dir_url(__FILE__).'js/election.js');
+    wp_register_script('d3', 'https://d3js.org/d3.v4.min.js');
     wp_enqueue_script('hx_electionjs', plugin_dir_url(__FILE__).'js/election.js');
+    wp_enqueue_script('d3', 'https://d3js.org/d3.v4.min.js');
 }
 
 /*

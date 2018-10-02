@@ -20,7 +20,6 @@ function hx_election($atts, $content)
     $id = uniqid();
     $graph = '
 <svg width="500" height="500" id="'.$id.'"></svg>
-<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 <script type="text/javascript">
 let colors = [];
 let src_data = [];
