@@ -5,7 +5,7 @@ function graph(selector, src_data, colors) {
         width = +svg.attr('width'),
         height = +svg.attr('height'),
         radius = Math.min(width, height) / 2,
-        g = svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+        g = svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 1.25 + ')');
 
     let color = d3.scaleOrdinal(colors);
 
@@ -32,8 +32,8 @@ function graph(selector, src_data, colors) {
             .attr('d', path)
             .attr('fill', function(d) { return color(d.data[0]); });
 
-        arc.append('text')
+        /*arc.append('text')
             .attr('transform', function(d) { return 'translate(' + label.centroid(d) + ')'; })
             .attr('dy', '0.35em')
-            .text(function(d) { return d.data[0]; });
+            .text(function(d) { return d.data[0]; });*/
 }
