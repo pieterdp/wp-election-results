@@ -8,6 +8,7 @@ function hx_election($atts, $content)
 {
     $a = shortcode_atts(
         array(
+            'id' => 'Wingene_2018',
             'name' => 'Wingene',
             'counted' => 0,
             'total' => 1,
@@ -17,12 +18,16 @@ function hx_election($atts, $content)
     );
     //https://bl.ocks.org/mbostock/3887235
     $data = do_shortcode($content);
-    $id = uniqid();
+    $id = preg_replace('[^A-Z0-9a-z_]', '_', $a['id']);
     $graph = '
     <div class="container">
     <div class="row">
     <div class="col-sm-12">
-    <svg width="500" height="400" id="graph_' . $id . '"></svg>
+    <figure class="figure">
+    <figcaption class="figure-caption text-left" id="caption_'.$id.'"></figcaption>
+    <svg width="500" height="400" id="graph_' . $id . '" class="figure-img img-fluid"></svg>
+</figure>
+    
 <table id="table_' . $id . '">
 <thead>
 <tr>
@@ -37,18 +42,27 @@ function hx_election($atts, $content)
 </div>
 </div>
 <script type="text/javascript">
-let colors = [];
-let src_data = [];
-let table_data = [];
-let table = $("#table_' . $id . '");
+let colors_' . $id . ' = [];
+let results_' . $id . ' = [];
+let seats_' . $id . ' = [];
+let table_data_' . $id . ' = [];
+let table_' . $id . ' = $("#table_' . $id . '");
 </script>
 ';
     $graph = $graph . $data;
     $graph = $graph . '
-<script type="text/javascript">
-graph("#graph_' . $id . '", src_data, colors);
-table.DataTable({
-    data: table_data
+<script type="text/javascript">';
+    if ($a['counted'] == $a['total']) {
+        // Show seats if a complete result
+        $graph = $graph . '
+graph("#graph_' . $id . '", seats_' . $id . ', colors_' . $id . ', "seats", "'.$id.'");';
+    } else {
+        $graph = $graph . '
+graph("#graph_' . $id . '", results_' . $id . ', colors_' . $id . ', "results", "'.$id.'");';
+    }
+    $graph = $graph . '
+table_' . $id . '.DataTable({
+    data: table_data_' . $id . '
 });
 </script>
 ';
@@ -59,6 +73,7 @@ function hx_result($atts)
 {
     $a = shortcode_atts(
         array(
+            'id' => 'Wingene_2018',
             'name' => 'Lijst van de Burgemeester',
             'percentage' => 100,
             'seats' => 10,
@@ -66,11 +81,14 @@ function hx_result($atts)
         ),
         $atts
     );
-
-    $graph = '<script type="text/javascript">
-src_data.push(["' . $a['name'] . '", ' . $a['percentage'] . ']);
-colors.push("' . $a['color'] . '");
-table_data.push(["' . $a['name'] . '", ' . $a['percentage'] . ', '.$a['seats'].', "'.$a['color'].'"]);
+    $id = preg_replace('[^A-Z0-9a-z_]', '_', $a['id']);
+    $graph = '<script type="text/javascript">';
+    $graph = $graph.'
+results_' . $id . '.push(["' . $a['name'] . '", ' . $a['percentage'] . ']);
+seats_' . $id . '.push(["' . $a['name'] . '", ' . $a['seats'] . ']);
+colors_' . $id . '.push("' . $a['color'] . '");
+table_data_' . $id . '.push(["' . $a['name'] . '", ' . $a['percentage'] . ', ' . $a['seats'] . ', "' . $a['color'] . '"]);';
+    $graph = $graph.'
 </script>';
 
     return $graph;

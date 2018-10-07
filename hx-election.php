@@ -13,9 +13,11 @@ include_once(plugin_dir_path(__FILE__).'hx-shortcode.php');
 function custom_js() {
     wp_register_style('bootstrap_4', 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css');
     wp_register_style('datatables', 'https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css');
+    wp_register_style('iconic', 'https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css');
 
     wp_enqueue_style('bootstrap_4', 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css');
     wp_enqueue_style('datatables', 'https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css');
+    wp_enqueue_style('iconic', 'https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css');
 
     wp_register_script('jquery_3', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js');
     wp_register_script('poppler', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js');
