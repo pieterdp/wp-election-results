@@ -1,14 +1,111 @@
-function graph(selector, seats, results, colors, graph_type, id) {
-    let svg = d3.select(selector),
-        width = +svg.attr('width'),
-        height = +svg.attr('height'),
-        radius = width / 2,
-        g = svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height + ')');
+function graph(selector, seats, results, colors, graph_type, id, counted, total) {
 
     let src_data = seats;
     if (graph_type !== 'seats') {
         src_data = results;
     }
+    let svg = $(selector);
+    if (counted !== 0) {
+        svg.removeAttr('display');
+        svg.parent().find('.alert').remove();
+        add_graph(selector, src_data, colors);
+    } else {
+        svg.attr('display', 'none');
+        svg.parent().find('.alert').remove();
+        svg.parent().append('<div class="alert alert-light">Nog geen resultaten.</div>');
+    }
+
+    let legend_el = $('#caption_' + id);
+    let switch_graph_el = $('#switch_graph_' + id);
+    add_legend(legend_el, switch_graph_el, graph_type, src_data, colors, counted, total);
+    switch_graph_el.find('button').removeClass('active');
+    switch_graph_el
+        .find('[data-hx-graph-type="' + graph_type + '"]')
+        .removeClass('active')
+        .addClass('active');
+    switch_graph_el
+        .on('click', 'button', function () {
+            let a = $(this);
+            let new_graph_type = a.attr('data-hx-graph-type');
+            if (new_graph_type !== graph_type) {
+                graph(selector, seats, results, colors, new_graph_type, id, counted, total);
+            }
+        });
+}
+
+function data_table(selector, table_data) {
+    let table_el = $(selector);
+    table_el.DataTable({
+        data: table_data,
+        columnDefs: [
+            {
+                render: function(data, type, row) {
+                    return data + '%';
+                },
+                targets: 1
+            }
+        ],
+        order: [
+            [1, 'desc'],
+            [2, 'desc'],
+            [0, 'asc']
+        ],
+        paging: false,
+        info: false,
+        language: {
+            decimal: ',',
+            thousands: '.',
+            search: 'Zoeken:',
+            zeroRecords: 'Niets gevonden'
+        }
+    });
+}
+
+function add_legend(parent_el, switch_graph_el, graph_type, src_data, colors, counted, total) {
+
+    let legend_text = '<ul class="list-inline">';
+
+    for (let i = 0; i < src_data.length; i++) {
+        // name, result
+        let party = src_data[i];
+        if (party[1] === 0) {
+            // skip
+            continue;
+        }
+        let party_text = '<li class="list-inline-item">' + party[0] /* + ': ' + party[1]*/;
+        if (colors[i] !== undefined) {
+            party_text = party_text + ' <span class="oi oi-media-stop" style="color: ' + colors[i] + '" title="Kleur ' + party[0] + '" aria-hidden="true"></span>';
+        }
+        party_text = party_text + '</li>';
+        legend_text = legend_text + party_text;
+    }
+
+    legend_text = legend_text + '</ul>';
+
+    let stations_counted;
+
+    if (total === 1) {
+        stations_counted = '(' + counted + ' van ' + total + ' stembureau geteld)';
+    } else {
+        stations_counted = '(' + counted + ' van ' + total + ' stembureaus geteld)';
+    }
+
+    if (graph_type === 'seats') {
+        legend_text = '<h6 class="el-results">Zetelverdeling <small class="text-muted small"><i>' + stations_counted + '</i></small></h6>' + legend_text;
+    } else {
+        legend_text = '<h6 class="el-results">Resultaten <small class="text-muted small"><i>' + stations_counted + '</i></small></h6>' + legend_text;
+    }
+
+    parent_el.empty();
+    parent_el.append(legend_text);
+}
+
+function add_graph(selector, src_data, colors) {
+    let svg = d3.select(selector),
+        width = +svg.attr('width'),
+        height = +svg.attr('height'),
+        radius = width / 2,
+        g = svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height + ')');
 
     let color = d3.scaleOrdinal(colors);
 
@@ -43,53 +140,5 @@ function graph(selector, seats, results, colors, graph_type, id) {
         .attr('transform', function(d) { return 'translate(' + label.centroid(d) + ')'; })
         .attr('dy', '0.35em')
         .text(function(d) { return d.data[0]; });*/
-
-    let legend_el = $('#caption_' + id);
-    let switch_graph_el = $('#switch_graph_' + id);
-    add_legend(legend_el, switch_graph_el, graph_type, src_data, colors);
-    switch_graph_el.find('button').removeClass('active');
-    switch_graph_el
-        .find('[data-hx-graph-type="' + graph_type + '"]')
-        .removeClass('active')
-        .addClass('active');
-    switch_graph_el
-        .on('click', 'button', function () {
-            let a = $(this);
-            let new_graph_type = a.attr('data-hx-graph-type');
-            if (new_graph_type !== graph_type) {
-                graph(selector, seats, results, colors, new_graph_type, id);
-            }
-        });
-}
-
-function add_legend(parent_el, switch_graph_el, graph_type, src_data, colors) {
-
-    let legend_text = '<ul class="list-inline">';
-
-    for (let i = 0; i < src_data.length; i++) {
-        // name, result
-        let party = src_data[i];
-        if (party[1] === 0) {
-            // skip
-            continue;
-        }
-        let party_text = '<li class="list-inline-item">' + party[0] + ': ' + party[1];
-        if (colors[i] !== undefined) {
-            party_text = party_text + ' <span class="oi oi-media-stop" style="color: ' + colors[i] + '" title="Kleur ' + party[0] + '" aria-hidden="true"></span>';
-        }
-        party_text = party_text + '</li>';
-        legend_text = legend_text + party_text;
-    }
-
-    legend_text = legend_text + '</ul>';
-
-    if (graph_type === 'seats') {
-        legend_text = 'Zetelverdeling' + legend_text;
-    } else {
-        legend_text = 'Resultaten' + legend_text;
-    }
-
-    parent_el.empty();
-    parent_el.append(legend_text);
 }
 

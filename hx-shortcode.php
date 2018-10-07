@@ -26,7 +26,7 @@ function hx_election($atts, $content)
     <figure class="figure mb-4 col-sm-12">
     <figcaption class="figure-caption text-left" id="caption_'.$id.'"></figcaption>
     <svg width="500" height="250" id="graph_' . $id . '" class="figure-img img-fluid ml-auto mr-auto"></svg>
-    <figcaption class="figure-caption text-right mt-2" id="switch_graph_'.$id.'"><div class="btn-group" role="group" aria-label="Verander resultaatweergave"><button type="button" data-hx-graph-type="seats" class="btn btn-light btn-sm">Zetelverdeling</button><button type="button" data-hx-graph-type="results" class="btn btn-light btn-sm">Resultaten</button></div></figcaption>
+    <figcaption class="figure-caption text-right mt-2" id="switch_graph_'.$id.'"><div class="btn-group" role="group" aria-label="Verander resultaatweergave"><button type="button" data-hx-graph-type="results" class="btn btn-light btn-sm">Resultaten</button><button type="button" data-hx-graph-type="seats" class="btn btn-light btn-sm">Zetelverdeling</button></div></figcaption>
 </figure>
     
 <table id="table_' . $id . '">
@@ -53,18 +53,10 @@ let table_' . $id . ' = $("#table_' . $id . '");
     $graph = $graph . $data;
     $graph = $graph . '
 <script type="text/javascript">';
-    if ($a['counted'] == $a['total']) {
-        // Show seats if a complete result
-        $graph = $graph . '
-graph("#graph_' . $id . '", seats_' . $id . ', results_' . $id . ', colors_' . $id . ', "seats", "'.$id.'");';
-    } else {
-        $graph = $graph . '
-graph("#graph_' . $id . '", seats_' . $id . ', results_' . $id . ', colors_' . $id . ', "results", "'.$id.'");';
-    }
     $graph = $graph . '
-table_' . $id . '.DataTable({
-    data: table_data_' . $id . '
-});
+graph("#graph_' . $id . '", seats_' . $id . ', results_' . $id . ', colors_' . $id . ', "results", "'.$id.'", '.$a['counted'].', '.$a['total'].');';
+    $graph = $graph . '
+data_table("#table_' . $id . '", table_data_' . $id . ');
 </script>
 ';
     return $graph;
