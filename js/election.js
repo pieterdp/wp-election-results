@@ -1,9 +1,14 @@
-function graph(selector, src_data, colors, graph_type, id) {
+function graph(selector, seats, results, colors, graph_type, id) {
     let svg = d3.select(selector),
         width = +svg.attr('width'),
         height = +svg.attr('height'),
-        radius = Math.min(width, height) / 2,
-        g = svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 1.25 + ')');
+        radius = width / 2,
+        g = svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height + ')');
+
+    let src_data = seats;
+    if (graph_type !== 'seats') {
+        src_data = results;
+    }
 
     let color = d3.scaleOrdinal(colors);
 
@@ -39,12 +44,25 @@ function graph(selector, src_data, colors, graph_type, id) {
         .attr('dy', '0.35em')
         .text(function(d) { return d.data[0]; });*/
 
-    let legend = $('#caption_' + id);
-    add_legend(legend, graph_type, src_data, colors);
-
+    let legend_el = $('#caption_' + id);
+    let switch_graph_el = $('#switch_graph_' + id);
+    add_legend(legend_el, switch_graph_el, graph_type, src_data, colors);
+    switch_graph_el.find('button').removeClass('active');
+    switch_graph_el
+        .find('[data-hx-graph-type="' + graph_type + '"]')
+        .removeClass('active')
+        .addClass('active');
+    switch_graph_el
+        .on('click', 'button', function () {
+            let a = $(this);
+            let new_graph_type = a.attr('data-hx-graph-type');
+            if (new_graph_type !== graph_type) {
+                graph(selector, seats, results, colors, new_graph_type, id);
+            }
+        });
 }
 
-function add_legend(parent_el, graph_type, src_data, colors) {
+function add_legend(parent_el, switch_graph_el, graph_type, src_data, colors) {
 
     let legend_text = '<ul class="list-inline">';
 
@@ -74,3 +92,4 @@ function add_legend(parent_el, graph_type, src_data, colors) {
     parent_el.empty();
     parent_el.append(legend_text);
 }
+
