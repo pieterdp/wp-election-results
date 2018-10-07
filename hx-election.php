@@ -2,7 +2,7 @@
 /*
 Plugin Name: Helptux Election plugin
 Plugin URI: https://github.com/pieterdp/wordpress-hx-election
-Version: 0.1.0
+Version: 1.0.0
 Description: Create fancy pie charts with the election results.
 Author: Pieter De Praetere
 License: GPL3
