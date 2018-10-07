@@ -2,13 +2,14 @@
 /*
 Plugin Name: Helptux Election plugin
 Plugin URI: https://github.com/pieterdp/wp-election-results
-Version: 1.0.0
+Version: 2.0.0
 Description: Create fancy pie charts with the election results.
 Author: Pieter De Praetere
 License: GPL3
  */
 
 include_once(plugin_dir_path(__FILE__).'hx-shortcode.php');
+include_once(plugin_dir_path(__FILE__).'hx-shortcode-auto.php');
 
 function custom_js() {
     wp_register_style('bootstrap_4', 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css');
@@ -41,4 +42,5 @@ function custom_js() {
  */
 add_shortcode('hx_election', 'hx_election');
 add_shortcode('hx_result', 'hx_result');
+add_shortcode('hx_election_auto', 'hx_election_auto');
 add_action('wp_enqueue_scripts', 'custom_js');
